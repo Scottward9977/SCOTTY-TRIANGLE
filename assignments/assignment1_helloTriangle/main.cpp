@@ -137,7 +137,7 @@ int main() {
 		unsigned int changeLocationx = glGetUniformLocation(shaderProgram, "editLocationy");
 		glUniform1f(changeLocationx, glfwGetTime());
 
-
+	
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//Drawing happens here!
 		glfwSwapBuffers(window);

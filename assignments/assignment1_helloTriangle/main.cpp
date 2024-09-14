@@ -6,141 +6,89 @@
 #include <ew/ewMath/ewMath.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "../core/ColorsnShit/ColorsnShit.h" 
+
+using namespace SHADER_;
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
+// Use your Shader class to load the shaders
+
 float vertices[] = {
-	-0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+    -0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+     0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 };
-const char* vertexShaderSource = R"(
-#version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec4 aColor;
-out vec4 Color;
-uniform float editLocationy; 
-void main()
-{
-   Color = aColor;
-   gl_Position = vec4(aPos.x, aPos.y+cos(editLocationy*2+aPos.x)/4, aPos.z, 1.0);
-};
-)";
-
-const char* fragmentShaderSource = R"(
-#version 330 core
-out vec4 FragColor;
-in vec4 Color;
-uniform float editColor;
-
-void main()
-{
-    FragColor = Color*editColor;
-} 
-)";
 
 using namespace std;
 
 int main() {
-	
-	if (!glfwInit()) {
-		printf("GLFW failed to init!");
-		return 1;
-	}
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
-	if (window == NULL) {
-		printf("GLFW failed to create window");
-		return 1;
-	}
-	glfwMakeContextCurrent(window);
-	if (!gladLoadGL(glfwGetProcAddress)) {
-		printf("GLAD Failed to load GL headers");
-		return 1;
-	}
+    if (!glfwInit()) {
+        printf("GLFW failed to init!");
+        return 1;
+    }
 
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
+    if (window == NULL) {
+        printf("GLFW failed to create window");
+        return 1;
+    }
 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glfwMakeContextCurrent(window);
+    if (!gladLoadGL(glfwGetProcAddress)) {
+        printf("GLAD Failed to load GL headers");
+        return 1;
+    }
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// color
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "ERROR::SHADER::VERTEX:: FAILED" << infoLog << endl;
-	}
-
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "ERROR::SHADER::VERTEX:: FAILED" << infoLog << endl;
-	}
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "ERROR::SHADER::VERTEX:: FAILED" << infoLog << endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	
+    Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
 
 
 
-	
-	//Initialization goes here!
-	
-	//Render loop
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-		//Clear framebuffer
-		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glUseProgram(shaderProgram);
-		unsigned int changeColor = glGetUniformLocation(shaderProgram, "editColor");
-		glUniform1f(changeColor, abs(sin(glfwGetTime())));
+    // Set vertex attribute pointers
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
-		unsigned int changeLocationx = glGetUniformLocation(shaderProgram, "editLocationy");
-		glUniform1f(changeLocationx, glfwGetTime());
+    // Color attribute
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
-	
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		//Drawing happens here!
-		glfwSwapBuffers(window);
-	}
-	printf("Shutting down...");
+    // Use your Shader class to use the shader program
+    shaderInfo.use();
+
+    // Render loop
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+
+        // Clear framebuffer
+        glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Use the shader program and update uniform variables
+        shaderInfo.use();
+        shaderInfo.setFloat("editColor", abs(sin(glfwGetTime())));  // Adjust the uniform to match your shader variable
+        shaderInfo.setFloat("editLocationy", glfwGetTime());  // Ensure this uniform exists in your shader
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glfwSwapBuffers(window);
+    }
+
+    // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    printf("Shutting down...");
+
+    glfwTerminate();
+    return 0;
 }

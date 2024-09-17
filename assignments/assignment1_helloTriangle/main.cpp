@@ -54,18 +54,17 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Set vertex attribute pointers
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Color attribute
+
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Use your Shader class to use the shader program
     shaderInfo.use();
 
-    // Render loop
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
@@ -73,10 +72,10 @@ int main() {
         glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Use the shader program and update uniform variables
+        
         shaderInfo.use();
-        shaderInfo.setFloat("editColor", abs(sin(glfwGetTime())));  // Adjust the uniform to match your shader variable
-        shaderInfo.setFloat("editLocationy", glfwGetTime());  // Ensure this uniform exists in your shader
+        shaderInfo.setFloat("editColor", abs(sin(glfwGetTime())));  
+        shaderInfo.setFloat("editLocationy", glfwGetTime()); 
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -84,7 +83,6 @@ int main() {
         glfwSwapBuffers(window);
     }
 
-    // Cleanup
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     printf("Shutting down...");

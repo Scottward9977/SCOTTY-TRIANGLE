@@ -13,8 +13,6 @@ using namespace SHADER_;
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
-// Use your Shader class to load the shaders
-
 float vertices[] = {
     -0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,

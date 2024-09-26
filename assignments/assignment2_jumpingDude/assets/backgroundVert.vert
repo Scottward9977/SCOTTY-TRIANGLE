@@ -1,0 +1,16 @@
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+
+uniform float time;
+
+void main()
+{
+    float depth = sin(aPos.x * 10.0 + time) * 0.4; 
+    vec3 pos = vec3(aPos.x, aPos.y, aPos.z + depth);
+    float speed = 0.5; 
+    TexCoord = vec2(aTexCoord.x + time * speed, aTexCoord.y);
+     gl_Position = vec4(pos, 1.0);
+}

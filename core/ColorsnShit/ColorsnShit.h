@@ -1,8 +1,8 @@
 #pragma once
+#define STB_IMAGE_IMPLEMENTATION
 
 #include "../ew/external/glad.h"
-#include <string> // Include this for std::string
-
+#include <string> 
 using namespace std;
 
 namespace SHADER_ {
@@ -20,4 +20,5 @@ namespace SHADER_ {
     private:
         void checkCompileErrors(unsigned int shader, string type);
     };
+   
 }

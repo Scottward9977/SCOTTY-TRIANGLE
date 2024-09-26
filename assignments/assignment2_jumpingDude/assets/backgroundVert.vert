@@ -10,9 +10,9 @@ uniform float time;
 void main()
 {
     float depth = sin(aPos.x * 10.0 + time) * 0.4; 
-    vec3 pos = vec3(aPos.x*4, aPos.y*4, (aPos.z * 4) + depth);
+    vec3 pos = vec3(aPos.x*4, aPos.y*4, (aPos.z * 4));
     ourColor = aColor;
     float speed = 0.5; 
-    TexCoord = vec2((aTexCoord.x*8) + time * speed, (aTexCoord.y*8));
+    TexCoord = vec2(((aTexCoord.x*8) + time * speed), (aTexCoord.y*8));
      gl_Position = vec4(pos, 1.0);
 }

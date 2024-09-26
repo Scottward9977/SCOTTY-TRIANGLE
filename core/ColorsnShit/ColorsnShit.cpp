@@ -1,4 +1,6 @@
 #include "ColorsnShit.h"
+#include "TextuerinShit.h"
+#include "../ew/external/stb_image.h"
 
 #include <string>
 #include <fstream>
@@ -99,4 +101,22 @@ void SHADER_:: Shader :: checkCompileErrors(unsigned int shader, string type)
              cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " <<  endl;
         }
     }
+}
+
+void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip)
+{
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(flip);
+    unsigned char* data = stbi_load(assetPath, &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;// this line is chatgpt becouse i couldn't get it to load properly 
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 }

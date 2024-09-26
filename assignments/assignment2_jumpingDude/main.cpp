@@ -84,27 +84,6 @@ int main() {
     // texture coord attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-
-
-    unsigned int bgVBO, bgEBO, bgVAO;
-
-    glGenVertexArrays(1, &bgVAO);
-    glBindVertexArray(bgVAO);
-
-    glGenBuffers(1, &bgVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, bgVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(backgroundVertices), backgroundVertices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &bgEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bgEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(backgroundIndices), backgroundIndices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // Position
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // Texture Coordinates
-    glEnableVertexAttribArray(1);
-
-    // texture coord attribute
    
     
 
@@ -226,7 +205,6 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, bgTexture);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, bgTexture2);
-        glBindVertexArray(bgVAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // 2. Use foreground shader and draw foreground

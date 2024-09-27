@@ -52,6 +52,7 @@ int main() {
 
     Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
     Shader backgroundShader("assets/backgroundVert.vert", "assets/backgroundFrag.frag");
+
     Texture textuer;
     
 
@@ -78,42 +79,34 @@ int main() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
+
+
     unsigned int texture1;
     glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    textuer.loadTextureImage("assets/cat.png", true);
+
+    textuer.bind(texture1);
+    textuer.loadTextureImage("assets/cat.png", true, GL_LINEAR, GL_REPEAT);
+
 
     unsigned int bgTexture1, bgTexture2;
 
     glGenTextures(1, &bgTexture1);
-    glBindTexture(GL_TEXTURE_2D, bgTexture1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    textuer.loadTextureImage("assets/wall.jpg", true);
-   
     glGenTextures(1, &bgTexture2);
-    glBindTexture(GL_TEXTURE_2D, bgTexture2);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    textuer.loadTextureImage("assets/catfood.png", true);
-    
+
+    textuer.bind(bgTexture1);
+    textuer.loadTextureImage("assets/wall.jpg", true, GL_LINEAR, GL_REPEAT);
+
+    textuer.bind(bgTexture2);
+    textuer.loadTextureImage("assets/catfood.png", true, GL_LINEAR, GL_REPEAT);
 
 
 
     shaderInfo.use();
-    glUniform1i(glGetUniformLocation(shaderInfo.ID, "texture1"), 0);
+    shaderInfo.setInt("texture1", 0);
 
     backgroundShader.use();
-    glUniform1i(glGetUniformLocation(backgroundShader.ID, "bgTexture1"), 0); 
-    glUniform1i(glGetUniformLocation(backgroundShader.ID, "bgTexture2"), 1);
+    backgroundShader.setInt("bgTexture1", 0);
+    backgroundShader.setInt("bgTexture2", 1);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();

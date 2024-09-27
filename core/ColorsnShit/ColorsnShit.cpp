@@ -103,8 +103,12 @@ void SHADER_:: Shader :: checkCompileErrors(unsigned int shader, string type)
     }
 }
 
-void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip)
+void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip, int filterMode, int wrapMode)
 {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(flip);
     unsigned char* data = stbi_load(assetPath, &width, &height, &nrChannels, 0);
@@ -119,4 +123,8 @@ void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip)
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+}
+void SHADER_::Texture::bind(unsigned int slot)
+{
+    glBindTexture(GL_TEXTURE_2D, slot);
 }

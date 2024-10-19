@@ -9,7 +9,7 @@
 #include <string>
 
 using namespace std;
-SHADER_ :: Shader :: Shader(const char* vertexPath, const char* fragmentPath)
+     ColorNShit_:: Shader  :: Shader(const char* vertexPath, const char* fragmentPath)
     {
        
         string vertexCode;
@@ -63,23 +63,23 @@ SHADER_ :: Shader :: Shader(const char* vertexPath, const char* fragmentPath)
         glDeleteShader(vertex);
         glDeleteShader(fragment);
     }
-void SHADER_:: Shader :: use()
+void ColorNShit_:: Shader  :: use()
 {
     glUseProgram(ID);
 }
-void SHADER_::Shader :: setBool(const string& name, bool value) const
+void ColorNShit_:: Shader  :: setBool(const string& name, bool value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
-void SHADER_:: Shader :: setInt(const string& name, int value) const
+void ColorNShit_:: Shader  :: setInt(const string& name, int value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
-void SHADER_:: Shader :: setFloat(const string& name, float value) const
+void ColorNShit_:: Shader  :: setFloat(const string& name, float value) const
 {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
-void SHADER_:: Shader :: checkCompileErrors(unsigned int shader, string type)
+void ColorNShit_:: Shader  :: checkCompileErrors(unsigned int shader, string type)
 {
     int success;
     char infoLog[1024];
@@ -103,7 +103,7 @@ void SHADER_:: Shader :: checkCompileErrors(unsigned int shader, string type)
     }
 }
 
-void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip, int filterMode, int wrapMode)
+void ColorNShit_:: Texture :: loadTextureImage(char* assetPath, bool flip, int filterMode, int wrapMode)
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
@@ -124,7 +124,72 @@ void SHADER_::Texture::loadTextureImage(char* assetPath, bool flip, int filterMo
     }
     stbi_image_free(data);
 }
-void SHADER_::Texture::bind(unsigned int slot)
+void ColorNShit_:: Texture :: bind(unsigned int slot)
 {
     glBindTexture(GL_TEXTURE_2D, slot);
+}
+
+     ColorNShit_:: Camera ::  Camera(int SCREEN_WIDTH_, int SCREEN_HEIGHT_){
+         this.SCREEN_WIDTH = SCREEN_WIDTH_;
+         this.SCREEN_HEIGHT = SCREEN_HEIGHT_;
+     }
+void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
+    const float cameraSpeed = 5.0 * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraFront * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    }
+
+};
+void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    camYaw += xoffset;
+    camPitch += yoffset;
+
+    if (camPitch > 89.0f)
+        camPitch = 89.0f;
+    if (camPitch < -89.0f)
+        camPitch = -89.0f;
+
+    vec3 direction;
+    direction.x = cos(radians(camYaw)) * cos(radians(camPitch));
+    direction.y = sin(radians(camPitch));
+    direction.z = sin(radians(camYaw)) * cos(radians(camPitch));
+    cameraFront = normalize(direction);
+}
+void ColorNShit_:: Camera  :: scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    fov -= (float)yoffset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
 }

@@ -12,10 +12,12 @@
 #include "../core/ColorsnShit/ColorsnShit.h" 
 #include "../core/ColorsnShit/TextuerinShit.h"
 
-using namespace SHADER_;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+using namespace std;
+using namespace glm;
+using namespace SHADER_;
 
 float vertices[] = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -60,13 +62,21 @@ float vertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-unsigned int indices[] = {
-    0, 1, 3, 
-    1, 2, 3  
+vec3 cubePositions[] = {
+    glm::vec3(0.5f, 1.0f, -3.0f),
+    glm::vec3(2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f, 2.0f, -2.5f),
+    glm::vec3(1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
-using namespace std;
-using namespace glm;
+
+
 
 int main() {
     if (!glfwInit()) {
@@ -95,28 +105,23 @@ int main() {
     Texture textuer;
     
 
-    unsigned int VAO, VBO, EBO;
-
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+;
+
     glBindVertexArray(VAO);
 
-    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    // texture 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+
 
 
 
@@ -124,7 +129,7 @@ int main() {
     glGenTextures(1, &texture1);
 
     textuer.bind(texture1);
-    textuer.loadTextureImage("assets/wall.jpg", true, GL_LINEAR, GL_REPEAT);
+    textuer.loadTextureImage("assets/cat.png", true, GL_LINEAR, GL_REPEAT);
 
 
    /* unsigned int bgTexture1, bgTexture2;
@@ -152,61 +157,43 @@ int main() {
     unsigned int vectPro = glad_glGetUniformLocation(shaderInfo.ID, "projection");
 
 
-    
+    glEnable(GL_DEPTH_TEST);
 
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-
-        // Clear framebuffer
-        glClearColor(1.0f, 0.0f, .0f, .0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // stuff to set animations
-        float timeValue = glfwGetTime();
-        float waveFrequency = 10.0f; 
-        float waveAmplitude = 0.05f;
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glBindVertexArray(VAO);
-
-        //backgroundShader.use();
-       
-      /*  glUniform1f(glGetUniformLocation(backgroundShader.ID, "time"), timeValue);
-        glUniform1f(glGetUniformLocation(backgroundShader.ID, "waveFrequency"), waveFrequency);
-        glUniform1f(glGetUniformLocation(backgroundShader.ID, "waveAmplitude"), waveAmplitude);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, bgTexture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, bgTexture2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
-
-        mat4 model = mat4(1.0f);
-        model = rotate(model, (float)glfwGetTime() *  radians(50.0f),  vec3(0.5f, 1.0f, 0.0f));
-         mat4 view =  mat4(1.0f);
-        view =  translate(view,  vec3(0.0f, 0.0f, -3.0f));
-        mat4 projection;
-        projection = perspective( radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-
         shaderInfo.use();
 
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-        
-
-        glUniform1f(glGetUniformLocation(shaderInfo.ID, "time"), timeValue);
-
-        glUniformMatrix4fv( vectModel, 1, GL_FALSE,   value_ptr(model));
-        glUniformMatrix4fv( vectView,  1,  GL_FALSE,  value_ptr(view));
-        glUniformMatrix4fv( vectPro,   1,   GL_FALSE, value_ptr(projection));
+        glUniformMatrix4fv(vectView, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(vectPro, 1, GL_FALSE, glm::value_ptr(projection));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        for (unsigned int i = 0; i < 10; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * (i + 1);
+            float timeValue = (float)glfwGetTime();
+            float rotationSpeed = glm::radians(angle); 
+          
+            model = glm::rotate(model, timeValue * rotationSpeed, glm::vec3(1.0f, 0.3f, 0.5f));
+            glUniformMatrix4fv(vectModel, 1, GL_FALSE, glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
     }
+
     glfwTerminate();
     return 0;
 }

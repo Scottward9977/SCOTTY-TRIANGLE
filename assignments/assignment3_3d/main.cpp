@@ -97,14 +97,14 @@ void processInput(GLFWwindow* window) {
         cameraPos += cameraSpeed * cameraFront;
 
     }
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         cameraPos -= cameraFront * cameraSpeed;
     }
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
     }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
 
     }
@@ -153,20 +153,17 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
         fov = 45.0f;
 }
 
-
 int main() {
     if (!glfwInit()) {
         printf("GLFW failed to init!");
         return 1;
     }
-
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
-
     if (window == NULL) {
         printf("GLFW failed to create window");
         return 1;
     }
-
+    glfwMakeContextCurrent(window);
     if (!gladLoadGL(glfwGetProcAddress)) {
         printf("GLAD Failed to load GL headers");
         return 1;
@@ -174,9 +171,10 @@ int main() {
 
 
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

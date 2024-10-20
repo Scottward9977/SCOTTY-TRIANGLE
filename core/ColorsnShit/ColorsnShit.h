@@ -15,6 +15,7 @@ namespace ColorNShit_ {
     public:
         unsigned int ID;
 
+        Shader();
         Shader(const char* vertexPath, const char* fragmentPath);
         void use();
         void setBool(const string& name, bool value) const;
@@ -49,7 +50,7 @@ namespace ColorNShit_ {
 
             float deltaTime = 0.0f;
             float lastFrame = 0.0f;
-            float fov = 45.0f;
+            float fov = 60.0f;
             bool firstMouse = true;
             float camYaw = -90.0f;
             float camPitch = 0.0f;
@@ -61,5 +62,18 @@ namespace ColorNShit_ {
         int SCREEN_HEIGHT;
 
         static Camera* camera;
+    };
+
+    class TheredObject
+    {
+        public: 
+            TheredObject(vec3 postions_[], Shader shader_, int postionLenght_);
+            void Draw();
+        private:
+            vec3* postions;
+            int postionLength;
+            Shader shader;
+            bool firstCall = true;
+
     };
 }

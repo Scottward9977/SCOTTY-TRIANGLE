@@ -64,18 +64,21 @@ float vertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
+
 vec3 cubePositions[] = {
      vec3(0.0f, 0.0f, 0.0f),
-     vec3(2.0f, 5.0f, -15.0f),
-     vec3(-1.5f, -2.2f, -2.5f),
-     vec3(-3.8f, -2.0f, -12.3f),
-     vec3(2.4f, -0.4f, -3.5f),
-     vec3(-1.7f, 3.0f, -7.5f),
-     vec3(1.3f, -2.0f, -2.5f),
-     vec3(1.5f, 2.0f, -2.5f),
-     vec3(1.5f, 0.2f, -1.5f),
-     vec3(-1.3f, 1.0f, -1.5f)
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f)
 };
+
+size_t arraySize = sizeof(cubePositions) / sizeof(cubePositions[0]);
 
 // was having issues with the camera passing properly, used chat gpt to get this line so that it would pass
 // i get an unresolved external singal error with out it this is the only line chat gpt gave me
@@ -85,6 +88,7 @@ int main() {
 
     Camera cam(SCREEN_WIDTH, SCREEN_HEIGHT);
     cam.setCam(&cam);
+
    
     if (!glfwInit()) {
         printf("GLFW failed to init!");
@@ -106,6 +110,10 @@ int main() {
     glfwSetCursorPosCallback(window, cam.mouse_callback);
     glfwSetScrollCallback(window, cam.scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
+    Texture textuer;
+    TheredObject cubes(cubePositions, shaderInfo, arraySize);
    
 
 
@@ -113,11 +121,8 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
-    Shader backgroundShader("assets/backgroundVert.vert", "assets/backgroundFrag.frag");
 
-    Texture textuer;
-   
+
     unsigned int VBO, VAO;
 
     glGenVertexArrays(1, &VAO);
@@ -136,7 +141,6 @@ int main() {
 
     unsigned int texture1;
     glGenTextures(1, &texture1);
-
     textuer.bind(texture1);
     textuer.loadTextureImage("assets/cat.png", true, GL_LINEAR, GL_REPEAT);
 
@@ -145,6 +149,7 @@ int main() {
   
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+        cam.processInput(window);
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -152,7 +157,7 @@ int main() {
         glBindVertexArray(VAO);
         shaderInfo.use();
 
-        cam.processInput(window);
+        
 
         float currentFrame = glfwGetTime();
         cam.deltaTime = currentFrame - cam.lastFrame;
@@ -170,16 +175,8 @@ int main() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
 
-        for (unsigned int i = 0; i < 10; i++) {
-             mat4 model =  mat4(1.0f);
-            model =  translate(model, cubePositions[i]);
-            float angle = 20.0f * (i + 1);
-            float timeValue = (float)glfwGetTime();
-            float rotationSpeed =  radians(angle); 
-            model =  rotate(model, timeValue * rotationSpeed,  vec3(1.0f, 0.3f, 0.5f));
-            shaderInfo.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        cubes.Draw();
+        
 
         glfwSwapBuffers(window);
     }

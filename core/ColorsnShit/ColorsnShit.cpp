@@ -9,9 +9,14 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <random>
 
 using namespace std;
 using namespace glm;
+      ColorNShit_::Shader  :: Shader()
+{
+
+     }
      ColorNShit_:: Shader  :: Shader(const char* vertexPath, const char* fragmentPath)
     {
        
@@ -146,24 +151,49 @@ void ColorNShit_:: Camera  :: setCam(Camera* cam)
     camera = cam;
 }
 void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
-    const float cameraSpeed = 5.0 * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    float cameraSpeed = 5.0 * deltaTime;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        cameraPos += cameraSpeed * cameraFront;
+         cameraSpeed *= 5;
 
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraUp;
+        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraUp;
+        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraUp;
+        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraUp;
+        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+        
+
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         cameraPos -= cameraFront * cameraSpeed;
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
     }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
 
     }
-
 };
 void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (camera->firstMouse) {
@@ -199,8 +229,43 @@ void ColorNShit_:: Camera  :: scroll_callback(GLFWwindow* window, double xoffset
     camera->fov -= static_cast<float>(yoffset);
     if (camera->fov < 1.0f)
         camera->fov = 1.0f;
-    if (camera->fov > 45.0f)
-        camera->fov = 45.0f;
+    if (camera->fov > 120.0f)
+        camera->fov = 120.0f;
+}
+
+     ColorNShit_:: TheredObject :: TheredObject(vec3 postions_[], Shader shader_, int postionLenght_)
+     {
+         postions = postions_;
+         shader = shader_;
+         postionLength = postionLenght_;
+     }
+void ColorNShit_::TheredObject::Draw() {
+    if (firstCall) {
+        srand(static_cast<unsigned int>(time(0)));
+
+        for (unsigned int i = 0; i < postionLength; i++) {
+            int randomInRange1 = rand() % 10;
+            int randomInRange2 = rand() % 10;
+            int randomInRange3 = rand() % 10;
+
+            postions[i].x += randomInRange1;
+            postions[i].y += randomInRange2;
+            postions[i].z += randomInRange3;
+        }
+        firstCall = false;
+    }
+
+    for (unsigned int i = 0; i < postionLength; i++) {
+        float angle = 20.0f * (i + 1);
+        float timeValue = (float)glfwGetTime();
+        float rotationSpeed = radians(angle);
+
+        mat4 model = mat4(1.0f);
+        model = translate(model, postions[i]);
+        model = rotate(model, timeValue * rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 }
 
 

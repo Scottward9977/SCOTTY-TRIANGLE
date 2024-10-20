@@ -141,6 +141,7 @@ void ColorNShit_:: Texture :: bind(unsigned int slot)
     glBindTexture(GL_TEXTURE_2D, slot);
 }
 
+     ColorNShit_:: Camera  :: Camera(){}
      ColorNShit_:: Camera  :: Camera(int SCREEN_WIDTH_, int SCREEN_HEIGHT_)
 {
     SCREEN_WIDTH = SCREEN_WIDTH_;
@@ -152,30 +153,26 @@ void ColorNShit_:: Camera  :: setCam(Camera* cam)
 }
 void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
     float cameraSpeed = 5.0 * deltaTime;
+    
     if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
          cameraSpeed *= 5;
 
     }
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        clickedOn = !clickedOn; 
+
+    }
     if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     {
         cameraPos += cameraSpeed * cameraUp;
-        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+        //cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
-        cameraPos += cameraSpeed * cameraUp;
-        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-    {
         cameraPos -= cameraSpeed * cameraUp;
-        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-    {
-        cameraPos -= cameraSpeed * cameraUp;
-        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+        //cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
     }
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
@@ -233,20 +230,21 @@ void ColorNShit_:: Camera  :: scroll_callback(GLFWwindow* window, double xoffset
         camera->fov = 120.0f;
 }
 
-     ColorNShit_:: TheredObject :: TheredObject(vec3 postions_[], Shader shader_, int postionLenght_)
+     ColorNShit_:: TheredObject :: TheredObject(vec3 postions_[], Shader shader_, Camera cam_, int postionLenght_)
      {
          postions = postions_;
          shader = shader_;
+         cam = cam_;
          postionLength = postionLenght_;
      }
-void ColorNShit_::TheredObject::Draw() {
+void ColorNShit_:: TheredObject :: Draw() {
     if (firstCall) {
         srand(static_cast<unsigned int>(time(0)));
 
         for (unsigned int i = 0; i < postionLength; i++) {
-            int randomInRange1 = rand() % 10;
-            int randomInRange2 = rand() % 10;
-            int randomInRange3 = rand() % 10;
+            int randomInRange1 = rand() % 20;
+            int randomInRange2 = rand() % 20;
+            int randomInRange3 = rand() % 20;
 
             postions[i].x += randomInRange1;
             postions[i].y += randomInRange2;
@@ -259,15 +257,13 @@ void ColorNShit_::TheredObject::Draw() {
         float angle = 20.0f * (i + 1);
         float timeValue = (float)glfwGetTime();
         float rotationSpeed = radians(angle);
-
+        float time = glfwGetTime();
+        float scaleMag;
         mat4 model = mat4(1.0f);
-        model = translate(model, postions[i]);
+        model = translate(model, vec3(postions[i].x += sin(time)/120, postions[i].y, postions[i].z));
+        model = scale(model, vec3(abs(sin(time)), abs(sin(time)), abs(sin(time))));
         model = rotate(model, timeValue * rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
-
-
-
-

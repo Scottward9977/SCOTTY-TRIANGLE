@@ -75,6 +75,23 @@ vec3 cubePositions[] = {
      vec3(0.0f, 0.0f, 0.0f),
      vec3(0.0f, 0.0f, 0.0f),
      vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
+     vec3(0.0f, 0.0f, 0.0f),
      vec3(0.0f, 0.0f, 0.0f)
 };
 
@@ -113,7 +130,7 @@ int main() {
 
     Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
     Texture textuer;
-    TheredObject cubes(cubePositions, shaderInfo, arraySize);
+    TheredObject cubes(cubePositions, shaderInfo,cam, arraySize);
    
 
 
@@ -147,7 +164,7 @@ int main() {
     shaderInfo.use();
     shaderInfo.setInt("texture1", 0);
   
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window)&& cam.clickedOn) {
         glfwPollEvents();
         cam.processInput(window);
 

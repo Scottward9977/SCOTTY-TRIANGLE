@@ -37,6 +37,7 @@ namespace ColorNShit_ {
     class Camera {
         public:
 
+            Camera();
             Camera(int SCREEN_WIDTH_, int SCREEN_HEIGHT_);
             void setCam(Camera* cam);
 
@@ -51,11 +52,13 @@ namespace ColorNShit_ {
             float deltaTime = 0.0f;
             float lastFrame = 0.0f;
             float fov = 60.0f;
-            bool firstMouse = true;
+            bool  firstMouse = true;
             float camYaw = -90.0f;
             float camPitch = 0.0f;
             float lastX = SCREEN_WIDTH / 2.0;
             float lastY = SCREEN_HEIGHT / 2.0;
+            bool clickedOn = true;
+            bool exit = false;
             
     private:
         int SCREEN_WIDTH;
@@ -67,12 +70,13 @@ namespace ColorNShit_ {
     class TheredObject
     {
         public: 
-            TheredObject(vec3 postions_[], Shader shader_, int postionLenght_);
+            TheredObject(vec3 postions_[], Shader shader_, Camera cam_, int postionLenght_);
             void Draw();
         private:
             vec3* postions;
             int postionLength;
             Shader shader;
+            Camera cam;
             bool firstCall = true;
 
     };

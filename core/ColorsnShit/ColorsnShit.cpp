@@ -84,7 +84,7 @@ void ColorNShit_:: Shader  :: setFloat(const string& name, float value) const
 }
 void ColorNShit_:: Shader  :: setMat4(const string& name, mat4 value) const
 {
-    glUniformMatrix4fv(ID, 1, GL_FALSE, value_ptr(value));
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value_ptr(value));
 }
 void ColorNShit_:: Shader  :: checkCompileErrors(unsigned int shader, string type)
 {
@@ -134,6 +134,73 @@ void ColorNShit_:: Texture :: loadTextureImage(char* assetPath, bool flip, int f
 void ColorNShit_:: Texture :: bind(unsigned int slot)
 {
     glBindTexture(GL_TEXTURE_2D, slot);
+}
+
+     ColorNShit_:: Camera  :: Camera(int SCREEN_WIDTH_, int SCREEN_HEIGHT_)
+{
+    SCREEN_WIDTH = SCREEN_WIDTH_;
+    SCREEN_HEIGHT = SCREEN_HEIGHT_;
+}
+void ColorNShit_:: Camera  :: setCam(Camera* cam)
+{
+    camera = cam;
+}
+void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
+    const float cameraSpeed = 5.0 * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraFront * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    }
+
+};
+void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (camera->firstMouse) {
+        camera->lastX = xpos;
+        camera->lastY = ypos;
+        camera->firstMouse = false;
+    }
+
+    float xoffset = xpos - camera->lastX;
+    float yoffset = camera->lastY - ypos;
+    camera->lastX = xpos;
+    camera->lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    camera->camYaw += xoffset;
+    camera->camPitch += yoffset;
+
+    if (camera->camPitch > 89.0f)
+        camera->camPitch = 89.0f;
+    if (camera->camPitch < -89.0f)
+        camera->camPitch = -89.0f;
+
+    vec3 direction;
+    direction.x = cos(radians(camera->camYaw)) * cos(radians(camera->camPitch));
+    direction.y = sin(radians(camera->camPitch));
+    direction.z = sin(radians(camera->camYaw)) * cos(radians(camera->camPitch));
+    camera->cameraFront = normalize(direction);
+}
+void ColorNShit_:: Camera  :: scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera->fov -= static_cast<float>(yoffset);
+    if (camera->fov < 1.0f)
+        camera->fov = 1.0f;
+    if (camera->fov > 45.0f)
+        camera->fov = 45.0f;
 }
 
 

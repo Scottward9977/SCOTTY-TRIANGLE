@@ -77,79 +77,14 @@ vec3 cubePositions[] = {
      vec3(-1.3f, 1.0f, -1.5f)
 };
 
-vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
-vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
-
-
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-float fov = 45.0f;
-bool firstMouse = true;
-float camYaw = -90.0f;
-float camPitch = 0.0f;
-float lastX = SCREEN_WIDTH / 2.0;
-float lastY = SCREEN_HEIGHT / 2.0;
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    camYaw += xoffset;
-    camPitch += yoffset;
-
-    if (camPitch > 89.0f)
-        camPitch = 89.0f;
-    if (camPitch < -89.0f)
-        camPitch = -89.0f;
-
-    vec3 direction;
-    direction.x = cos(radians(camYaw)) * cos(radians(camPitch));
-    direction.y = sin(radians(camPitch));
-    direction.z = sin(radians(camYaw)) * cos(radians(camPitch));
-    cameraFront = normalize(direction);
-}
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    fov -= static_cast<float>(yoffset);
-    if (fov < 1.0f)
-        fov = 1.0f;
-    if (fov > 45.0f)
-        fov = 45.0f;
-}
-void processInput(GLFWwindow* window) {
-    const float cameraSpeed = 5.0 * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        cameraPos += cameraSpeed * cameraFront;
-
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        cameraPos -= cameraFront * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-
-    }
-
-};
+// was having issues with the camera passing properly, used chat gpt to get this line so that it would pass
+// i get an unresolved external singal error with out it this is the only line chat gpt gave me
+Camera* Camera::camera = nullptr;
 
 int main() {
+
+    Camera cam(SCREEN_WIDTH, SCREEN_HEIGHT);
+    cam.setCam(&cam);
    
     if (!glfwInit()) {
         printf("GLFW failed to init!");
@@ -168,8 +103,8 @@ int main() {
 
 
     glfwMakeContextCurrent(window);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetCursorPosCallback(window, cam.mouse_callback);
+    glfwSetScrollCallback(window, cam.scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    
 
@@ -207,12 +142,7 @@ int main() {
 
     shaderInfo.use();
     shaderInfo.setInt("texture1", 0);
-
-    unsigned int vectModel = glad_glGetUniformLocation(shaderInfo.ID, "model");
-    unsigned int vectView = glad_glGetUniformLocation(shaderInfo.ID, "view");
-    unsigned int vectPro = glad_glGetUniformLocation(shaderInfo.ID, "projection");
-
-
+  
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
@@ -222,20 +152,19 @@ int main() {
         glBindVertexArray(VAO);
         shaderInfo.use();
 
-        processInput(window);
-
+        cam.processInput(window);
 
         float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        cam.deltaTime = currentFrame - cam.lastFrame;
+        cam.lastFrame = currentFrame;
 
          mat4 view =  mat4(1.0f);
 
-         view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-         mat4 projection =  perspective(radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+         view = lookAt(cam.cameraPos, cam.cameraPos + cam.cameraFront, cam.cameraUp);
+         mat4 projection =  perspective(radians(cam.fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-        glUniformMatrix4fv(vectView, 1, GL_FALSE,  value_ptr(view));
-        glUniformMatrix4fv(vectPro, 1, GL_FALSE,  value_ptr(projection));
+        shaderInfo.setMat4("view", view);
+        shaderInfo.setMat4("projection", projection);
 
 
         glActiveTexture(GL_TEXTURE0);
@@ -248,7 +177,7 @@ int main() {
             float timeValue = (float)glfwGetTime();
             float rotationSpeed =  radians(angle); 
             model =  rotate(model, timeValue * rotationSpeed,  vec3(1.0f, 0.3f, 0.5f));
-            glUniformMatrix4fv(vectModel, 1, GL_FALSE,  value_ptr(model));
+            shaderInfo.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 

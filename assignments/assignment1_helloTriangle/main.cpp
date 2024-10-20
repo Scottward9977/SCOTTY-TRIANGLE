@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 #include "../core/ColorsnShit/ColorsnShit.h" 
 
-using namespace SHADER_;
+using namespace ColorNShit_;
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;

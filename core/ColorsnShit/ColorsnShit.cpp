@@ -161,13 +161,16 @@ void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        clickedOn = !clickedOn; 
+        exit = !exit; 
 
     }
     if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     {
         cameraPos += cameraSpeed * cameraUp;
         //cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+        clickedOn = !clickedOn;
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {

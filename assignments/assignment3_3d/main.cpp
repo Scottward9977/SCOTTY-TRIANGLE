@@ -164,7 +164,7 @@ int main() {
     shaderInfo.use();
     shaderInfo.setInt("texture1", 0);
   
-    while (!glfwWindowShouldClose(window)&& cam.clickedOn) {
+    while (!glfwWindowShouldClose(window)&& cam.exit) {
         glfwPollEvents();
         cam.processInput(window);
 
@@ -181,9 +181,21 @@ int main() {
         cam.lastFrame = currentFrame;
 
          mat4 view =  mat4(1.0f);
+        
 
          view = lookAt(cam.cameraPos, cam.cameraPos + cam.cameraFront, cam.cameraUp);
-         mat4 projection =  perspective(radians(cam.fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        // if(cam.clickedOn)
+        // {
+             mat4 projection = perspective(radians(cam.fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+         /*}
+         else {
+             float left = -((float)SCREEN_WIDTH / 2.0f);
+             float right = ((float)SCREEN_WIDTH / 2.0f);
+             float bottom = -((float)SCREEN_HEIGHT / 2.0f);
+             float top = ((float)SCREEN_HEIGHT / 2.0f);
+             projection = ortho(left, right, bottom, top, 0.1f, 100.0f);
+         }*/
+         
 
         shaderInfo.setMat4("view", view);
         shaderInfo.setMat4("projection", projection);

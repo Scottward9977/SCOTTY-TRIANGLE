@@ -45,8 +45,8 @@ namespace ColorNShit_ {
             static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
             static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-            vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
-            vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+            vec3 cameraPos = vec3(2.0f, 4.0f, 3.0f);
+            vec3 cameraFront = vec3(0.0f, 0.0f, 0.0f);
             vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
             float deltaTime = 0.0f;
@@ -58,7 +58,7 @@ namespace ColorNShit_ {
             float lastX = SCREEN_WIDTH / 2.0;
             float lastY = SCREEN_HEIGHT / 2.0;
             bool clickedOn = true;
-            bool exit = false;
+            bool exit = true;
             
     private:
         int SCREEN_WIDTH;

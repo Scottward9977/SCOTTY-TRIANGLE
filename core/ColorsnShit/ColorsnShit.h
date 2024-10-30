@@ -81,4 +81,5 @@ namespace ColorNShit_ {
             bool firstCall = true;
 
     };
+
 }

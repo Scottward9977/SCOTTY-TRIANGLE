@@ -13,9 +13,6 @@ uniform vec3 viewPos;
 void main()
 {
    vec3 color = texture(texture1, TexCoord).rgb;
-
-    if (FragColor.a < 0.1)
-        discard;
    
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * color;

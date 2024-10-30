@@ -5,9 +5,9 @@
 #include <ew/external/glad.h>
 #include <ew/ewMath/ewMath.h>
 
-#include <../imgui.h>
-#include <../backends/imgui_impl_glfw.h>
-#include <../backends/imgui_impl_opengl3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -16,8 +16,8 @@
 #include "ew/external/stb_image.h"
 #include "../core/ColorsnShit/ColorsnShit.h" 
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 560;
+const int SCREEN_WIDTH = 940;
+const int SCREEN_HEIGHT = 720;
 
 using namespace std;
 using namespace glm;
@@ -118,6 +118,9 @@ int main() {
         return 1;
     }
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
+    IMGUI_CHECKVERSION();
+    CreateContext();
+
     if (window == NULL) {
         printf("GLFW failed to create window");
         return 1;
@@ -128,16 +131,15 @@ int main() {
         return 1;
     }
 
-    IMGUI_CHECKVERSION();
-    CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init();
 
 
     glfwMakeContextCurrent(window);
     glfwSetCursorPosCallback(window, cam.mouse_callback);
     glfwSetScrollCallback(window, cam.scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 
     Shader shaderInfo("assets/VertexShader.vert", "assets/FragmentShader.frag");
     Shader lightCube ("assets/lightcube.vert", "assets/lightcube.frag");
@@ -158,34 +160,36 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glBindVertexArray(0);
 
 
     unsigned int lightCubeVAO;
-        glGenVertexArrays(1, &lightCubeVAO);
-        glBindVertexArray(lightCubeVAO);
-
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        // note that we update the lamp's position attribute's stride to reflect the updated buffer data
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
+    glGenVertexArrays(1, &lightCubeVAO);
+    glBindVertexArray(lightCubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
 
     unsigned int texture1;
     glGenTextures(1, &texture1);
     textuer.bind(texture1);
-    textuer.loadTextureImage("assets/cat.png", true, GL_LINEAR, GL_REPEAT);
+    textuer.loadTextureImage("assets/wall.jpg", true, GL_LINEAR, GL_REPEAT);
 
     shaderInfo.use();
     vec3 lightPos = vec3(5.2f, 7.0f, 2.0);
     shaderInfo.setInt("texture1", 0);
+    int test = 5;
   
     while (!glfwWindowShouldClose(window)&& cam.exit) {
+
+        
         glfwPollEvents();
         cam.processInput(window);
 
@@ -194,16 +198,22 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         NewFrame();
 
+        
+        // Define ImGui window content
         Begin("Settings");
         Text("Add Stuff Here");
+        SliderInt("Test Slider",&test, 0, 100);
         End();
 
-        Render();
-        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+       
 
         // Clear screen and render OpenGL
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+        Render();
+        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
 
         glBindVertexArray(VAO);
         shaderInfo.use();

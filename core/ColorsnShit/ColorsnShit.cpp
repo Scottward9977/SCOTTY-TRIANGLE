@@ -13,7 +13,7 @@
 
 using namespace std;
 using namespace glm;
-      ColorNShit_::Shader  :: Shader()
+     ColorNShit_::Shader  :: Shader()
 {
 
      }
@@ -165,7 +165,14 @@ void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        exit = !exit; 
+        clickedOn = !clickedOn;
+
+        if (clickedOn) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
 
     }
     if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -200,6 +207,7 @@ void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
     }
 };
 void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (!camera -> clickedOn) return;
     if (camera->firstMouse) {
         camera->lastX = xpos;
         camera->lastY = ypos;
@@ -230,6 +238,7 @@ void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, do
     camera->cameraFront = normalize(direction);
 }
 void ColorNShit_:: Camera  :: scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (!camera->clickedOn) return;
     camera->fov -= static_cast<float>(yoffset);
     if (camera->fov < 1.0f)
         camera->fov = 1.0f;

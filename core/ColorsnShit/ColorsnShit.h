@@ -73,6 +73,9 @@ namespace ColorNShit_ {
         public: 
             TheredObject(vec3 postions_[], Shader shader_, Camera cam_, int postionLenght_);
             void Draw();
+
+            bool scaleObj;
+            bool rotateObj;
         private:
             vec3* postions;
             int postionLength;

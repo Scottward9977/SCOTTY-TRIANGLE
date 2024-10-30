@@ -16,8 +16,8 @@
 #include "ew/external/stb_image.h"
 #include "../core/ColorsnShit/ColorsnShit.h" 
 
-const int SCREEN_WIDTH = 940;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 using namespace std;
 using namespace glm;
@@ -184,8 +184,12 @@ int main() {
 
     shaderInfo.use();
     vec3 lightPos = vec3(5.2f, 7.0f, 2.0);
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    float ambientStrength = 0.1;
+    float diffuseStrength = 0.1;
+    float specularStrength = 0.1;
+    float ShininessStrength = 2;
     shaderInfo.setInt("texture1", 0);
-    int test = 5;
   
     while (!glfwWindowShouldClose(window)&& cam.exit) {
 
@@ -202,7 +206,14 @@ int main() {
         // Define ImGui window content
         Begin("Settings");
         Text("Add Stuff Here");
-        SliderInt("Test Slider",&test, 0, 100);
+        DragFloat3("Light Pos", &lightPos.x, 0, 100);
+        ColorEdit3("Light Color", &lightColor.x);
+        SliderFloat("Ambient Strength", &ambientStrength, 0.0f, 1.0f);
+        SliderFloat("Diffuse Strength",&diffuseStrength, 0.0f, 1.0f);
+        SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
+        SliderFloat("Shininess", &ShininessStrength, 2.0f, 1024.0f);
+        Checkbox("Rotate", &cubes.rotateObj);
+        Checkbox("Scale", &cubes.scaleObj);
         End();
 
        
@@ -219,6 +230,12 @@ int main() {
         shaderInfo.use();
         shaderInfo.setVec3("lightPos", lightPos);
         shaderInfo.setVec3("viewPos", cam.cameraPos);
+        shaderInfo.setVec3("lightColor", lightColor);
+        shaderInfo.setFloat("ambientStrength", ambientStrength);
+        shaderInfo.setFloat("diffuseStrength", diffuseStrength);
+        shaderInfo.setFloat("specularStrength", specularStrength);
+        shaderInfo.setFloat("ShininessStrength", ShininessStrength);
+
 
 
         float currentFrame = glfwGetTime();
@@ -239,8 +256,9 @@ int main() {
         cubes.Draw();
 
 
-        // also draw the lamp object
+       
         lightCube.use();
+        lightCube.setVec3("color", lightColor);
         lightCube.setMat4("projection", projection);
         lightCube.setMat4("view", view);
         mat4 model = mat4(1.0f);

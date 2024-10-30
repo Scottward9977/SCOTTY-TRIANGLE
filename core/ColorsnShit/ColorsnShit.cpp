@@ -270,15 +270,26 @@ void ColorNShit_:: TheredObject :: Draw() {
     }
 
     for (unsigned int i = 0; i < postionLength; i++) {
-        float angle = 20.0f * (i + 1);
+        float angle = 20.0f * i +1;
         float timeValue = (float)glfwGetTime();
         float rotationSpeed = radians(angle);
         float time = glfwGetTime();
         float scaleMag;
         mat4 model = mat4(1.0f);
         model = translate(model, vec3(postions[i].x, postions[i].y, postions[i].z));
-        model = scale(model, vec3(abs(sin(time)), abs(sin(time)), abs(sin(time))));
-        model = rotate(model, timeValue * rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
+        if (scaleObj)
+        {
+           model = scale(model, vec3(abs(sin(time)), abs(sin(time)), abs(sin(time))));
+        }
+        if (rotateObj)
+        {
+            model = rotate(model, timeValue * rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
+        }
+        else {
+            model = rotate(model, rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
+        }
+        
+        
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }

@@ -91,6 +91,10 @@ void ColorNShit_:: Shader  :: setMat4(const string& name, mat4 value) const
 {
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, value_ptr(value));
 }
+void ColorNShit_:: Shader  :: setVec3(const std::string& name, const glm::vec3& value) const
+{
+    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+}
 void ColorNShit_:: Shader  :: checkCompileErrors(unsigned int shader, string type)
 {
     int success;
@@ -263,7 +267,7 @@ void ColorNShit_:: TheredObject :: Draw() {
         float time = glfwGetTime();
         float scaleMag;
         mat4 model = mat4(1.0f);
-        model = translate(model, vec3(postions[i].x += sin(time)/120, postions[i].y, postions[i].z));
+        model = translate(model, vec3(postions[i].x, postions[i].y, postions[i].z));
         model = scale(model, vec3(abs(sin(time)), abs(sin(time)), abs(sin(time))));
         model = rotate(model, timeValue * rotationSpeed, vec3(1.0f, 0.3f, 0.5f));
         shader.setMat4("model", model);

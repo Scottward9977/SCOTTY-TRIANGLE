@@ -184,19 +184,8 @@ int main() {
         
 
          view = lookAt(cam.cameraPos, cam.cameraPos + cam.cameraFront, cam.cameraUp);
-        // if(cam.clickedOn)
-        // {
-             mat4 projection = perspective(radians(cam.fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-         /*}
-         else {
-             float left = -((float)SCREEN_WIDTH / 2.0f);
-             float right = ((float)SCREEN_WIDTH / 2.0f);
-             float bottom = -((float)SCREEN_HEIGHT / 2.0f);
-             float top = ((float)SCREEN_HEIGHT / 2.0f);
-             projection = ortho(left, right, bottom, top, 0.1f, 100.0f);
-         }*/
+         mat4 projection = perspective(radians(cam.fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
          
-
         shaderInfo.setMat4("view", view);
         shaderInfo.setMat4("projection", projection);
 

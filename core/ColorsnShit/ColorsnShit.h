@@ -22,6 +22,7 @@ namespace ColorNShit_ {
         void setInt(const string& name, int value) const;
         void setFloat(const string& name, float value) const;
         void setMat4(const string& name, mat4 value) const;
+        void setVec3(const std::string& name, const glm::vec3& value) const;
 
     private:
         void checkCompileErrors(unsigned int shader, string type);

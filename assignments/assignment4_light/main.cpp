@@ -202,10 +202,19 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         NewFrame();
 
+
+        ImGuiIO& io = ImGui::GetIO();
+        if (!cam.clickedOn) {
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            io.MousePos = ImVec2((float)xpos, (float)ypos);
+        }
+        else {
+            io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+        }
         
         // Define ImGui window content
         Begin("Settings");
-        Text("Add Stuff Here");
         DragFloat3("Light Pos", &lightPos.x, 0, 100);
         ColorEdit3("Light Color", &lightColor.x);
         SliderFloat("Ambient Strength", &ambientStrength, 0.0f, 1.0f);
@@ -265,17 +274,8 @@ int main() {
         model =translate(model, lightPos);
         model = scale(model,vec3(0.2f)); 
         lightCube.setMat4("model", model);
-
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
-      
-
-
-     
-
-
-        
 
         glfwSwapBuffers(window);
     }

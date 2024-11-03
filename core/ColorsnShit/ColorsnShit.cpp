@@ -13,7 +13,7 @@
 
 using namespace std;
 using namespace glm;
-     ColorNShit_::Shader  :: Shader()
+     ColorNShit_::Shader   :: Shader()
 {
 
      }
@@ -155,57 +155,62 @@ void ColorNShit_:: Camera  :: setCam(Camera* cam)
 {
     camera = cam;
 }
-void ColorNShit_:: Camera  :: processInput(GLFWwindow* window) {
-    float cameraSpeed = 5.0 * deltaTime;
-    
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
-         cameraSpeed *= 5;
-
-    }
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
+void ColorNShit_::Camera::processInput(GLFWwindow* window) {
+    float cameraSpeed = 5.0f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         clickedOn = !clickedOn;
-
         if (clickedOn) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            firstMouse = true;
         }
         else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
+    }
 
-    }
-    if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-        cameraPos += cameraSpeed * cameraUp;
-        //cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+    static int lastMouseButtonState = GLFW_RELEASE;
+    int currentMouseButtonState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+
+    if (currentMouseButtonState == GLFW_PRESS && lastMouseButtonState == GLFW_RELEASE) { 
         clickedOn = !clickedOn;
+        if (clickedOn) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            firstMouse = true; 
+        }
+        else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-        cameraPos -= cameraSpeed * cameraUp;
-        //cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        cameraPos += cameraSpeed * cameraFront;
-        
 
-    }
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        cameraPos -= cameraFront * cameraSpeed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+    lastMouseButtonState = currentMouseButtonState;
 
+  
+    if (clickedOn) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            cameraSpeed *= 5.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            cameraPos += cameraSpeed * cameraFront;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            cameraPos -= cameraSpeed * cameraFront;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            cameraPos -= normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            cameraPos += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+            cameraPos += cameraSpeed * cameraUp;
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+            cameraPos -= cameraSpeed * cameraUp;
+        }
     }
-};
+}
+
+
 void ColorNShit_:: Camera  :: mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (!camera -> clickedOn) return;
     if (camera->firstMouse) {
